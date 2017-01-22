@@ -8,11 +8,9 @@ class ACharacter(metaclass=ABCMeta):
         self.hp = 100  # health points
         self.mp = 100  # mana points
 
-    def __str__(self):
-        return "{}: hp:{}, mp:{}".format(self.name, self.hp, self.mp)
-
+    @abstractmethod
     def send_command(self, side, command):
-        print('{} side: {}'.format(side, self.name), command)
+        pass
 
 
 class DarkSideCharacter(ACharacter):
@@ -20,11 +18,23 @@ class DarkSideCharacter(ACharacter):
         super().__init__(name)
         self.side = "Dark"
 
+    def __str__(self):
+        return "{}: hp:{}, mp:{}".format(self.name, self.hp, self.mp)
+
+    def send_command(self, side, command):
+        print('{} side: {}'.format(side, self.name), command)
+
 
 class LightSideCharacter(ACharacter):
     def __init__(self, name):
         super().__init__(name)
         self.side = "Light"
+
+    def __str__(self):
+        return "{}: hp:{}, mp:{}".format(self.name, self.hp, self.mp)
+
+    def send_command(self, side, command):
+        print('{} side: {}'.format(side, self.name), command)
 
 
 class AFactory(metaclass=ABCMeta):

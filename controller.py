@@ -1,3 +1,5 @@
+from abc import abstractmethod
+
 from factory_of_characters import ACharacter, SpecificFactoryDarkSide, SpecificFactoryLightSide
 
 
@@ -6,6 +8,10 @@ class AControlCharacters(ACharacter):
         super().__init__(self)
         self.dark_list = list()
         self.light_list = list()
+
+    @abstractmethod
+    def add_character(self, side, name):
+        pass
 
 
 class ControlCharacters(AControlCharacters):

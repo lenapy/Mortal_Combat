@@ -11,6 +11,9 @@ class ACharacter(metaclass=ABCMeta):
     def __str__(self):
         return "{}: hp:{}, mp:{}".format(self.name, self.hp, self.mp)
 
+    def send_command(self, side, command):
+        print('{} side: {}'.format(side, self.name), command)
+
 
 class DarkSideCharacter(ACharacter):
     def __init__(self, name):
@@ -39,26 +42,3 @@ class SpecificFactoryLightSide(AFactory):
     def create_character(self, name):
         return LightSideCharacter(name)
 
-
-character = "Side"
-if character == "DarkSide":
-    specific_factory = SpecificFactoryDarkSide()
-else:
-    specific_factory = SpecificFactoryLightSide()
-
-print(specific_factory.create_character("vasya"))
-
-
-class ControlCharacter:
-    def __init__(self):
-        self.dark_list = list()
-        self.light_list = list()
-
-    def add_character(self, side, name):
-        if side == "Dark":
-            self.dark_list.append(SpecificFactoryDarkSide().create_character(name))
-        else:
-            self.light_list.append(SpecificFactoryLightSide().create_character(name))
-
-control = ControlCharacter()
-control.add_character("Dark", "character1")

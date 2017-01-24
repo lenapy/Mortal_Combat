@@ -37,5 +37,3 @@ controller.add_character("Dark", "Darth Vader")
 controller.add_character("Light", "Agrippa Aldrete")
 controller.add_character("Light", "Chewbacca")
 controller.add_character("Light", "Padmé Amidala")
-
-

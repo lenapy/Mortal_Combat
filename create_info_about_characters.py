@@ -24,3 +24,4 @@ for _ in range(6):
     name = input("name")
     info = input("info")
     create_and_save_data(name, info)
+

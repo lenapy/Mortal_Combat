@@ -1,6 +1,8 @@
 from abc import ABCMeta, abstractmethod
 import pickle
 
+from controller import controller
+
 
 class AShowCharactersInfo(metaclass=ABCMeta):
     DATA_FILE = "characters_data"
@@ -69,12 +71,25 @@ class AState(metaclass=ABCMeta):
 
 class StateShowMenu(AState):
     def handle(self):
-        self._context.set_state(Context.STATE_SHOW_CHARACTERS_INFO)
-        self._context.set_state(Context.STATE_SELECT_PLAYER)
+        user_input_1 = input("Choose your side:\n`Dark`,"
+                             " press 1\n`Light`, press 2")
+        if user_input_1 == '1':
+            controller.send_command("Dark", "is ready to fight")
+        else:
+            controller.send_command("Light", "is ready to fight")
+        user_input_2 = input("To choose character, press 1\n"
+                             "To read info about character, press 2")
+        if user_input_2 == '1':
+            self._context.set_state(Context.STATE_SELECT_PLAYER)
+        else:
+            self._context.set_state(Context.STATE_SHOW_CHARACTERS_INFO)
 
 
 class StateShowCharactersInfo(AState):
     def handle(self):
+        proxy = ProxyShowCharactersInfo(ShowCharactersInfo)
+        proxy.show_info('Agrippa Aldrete')
+
         self._context.set_state(Context.STATE_SHOW_MENU)
         self._context.set_state(Context.STATE_SELECT_PLAYER)
 
@@ -105,5 +120,6 @@ class Context:
     def next_state(self):
         self._state.handle()
 
-
-
+context = Context(Context.STATE_SHOW_MENU)
+context.next_state()
+context.next_state()

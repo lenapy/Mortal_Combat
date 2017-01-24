@@ -38,5 +38,4 @@ controller.add_character("Light", "Agrippa Aldrete")
 controller.add_character("Light", "Chewbacca")
 controller.add_character("Light", "Padmé Amidala")
 
-controller.send_command("Dark", "is ready to fight")
-controller.send_command("Light", "is ready to fight")
+

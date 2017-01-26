@@ -1,8 +1,10 @@
 from abc import ABCMeta, abstractmethod
 import pickle
 
+
 from controller import controller
-from factory_of_characters import SpecificFactoryLightSide, SpecificFactoryDarkSide
+from factory_of_characters import AFactory
+from fight import Fight
 
 
 class AShowCharactersInfo(metaclass=ABCMeta):
@@ -73,9 +75,8 @@ class AState(metaclass=ABCMeta):
 class StateShowMenu(AState):
     side = "Light"
 
-
     def handle(self):
-        user_input_1 = input("Choose your side:\n`Dark`,"
+        user_input_1 = input("Choose side:\n`Dark`,"
                              " press 1\n`Light`, press 2")
         if user_input_1 == '1':
             StateShowMenu.side = "Dark"
@@ -96,7 +97,7 @@ class StateShowCharactersInfo(AState):
         print(StateShowMenu.side)
         info = ProxyShowCharactersInfo(ShowCharactersInfo)
         if StateShowMenu.side == "Light":
-            characters_list = controller.light_list  # не показывает инфу по светлому списку ?
+            characters_list = controller.light_list
         else:
             characters_list = controller.dark_list
         for character in characters_list:
@@ -115,31 +116,38 @@ class StateSelectPlayer(AState):
     players = []
 
     def handle(self):
-            if StateShowMenu.side == "Light":
-                lst = [0, 'Agrippa Aldrete', 'Chewbacca', 'Padmé Amidala']
+
+        if StateShowMenu.side == "Light":
+            lst = [0, 'Agrippa Aldrete', 'Chewbacca', 'Padmé Amidala']
+        else:
+            lst = [0, 'Commander Bacara', 'Ayy Vida', 'Darth Vader']
+        for num, name in enumerate(lst):
+            if num == 0:
+                continue
             else:
-                lst = [0, 'Commander Bacara', 'Ayy Vida', 'Darth Vader']
-            for num, name in enumerate(lst):
-                if num == 0:
-                    continue
-                else:
-                    print(num, name)
-            user_input_4 = input("Enter number of character: ")
-            player_name = lst[int(user_input_4)]
-            player_side = StateShowMenu.side
-            player = (player_side, player_name)
-            StateSelectPlayer.players.append(player)
-            print(StateSelectPlayer.players)
-            if len(StateSelectPlayer.players) == 2:
-                self._context.set_state(Context.STATE_PLAY_GAME)
-            else:
-                print("Now you can choose enemy for your player:")
-                self._context.set_state(Context.STATE_SHOW_MENU)
+                print(num, name)
+        user_input_4 = input("Enter number of character: ")
+        player_name = lst[int(user_input_4)]
+        player_side = StateShowMenu.side
+        player = {'name': player_name, 'side': player_side}
+        StateSelectPlayer.players.append(player)
+        if len(StateSelectPlayer.players) == 2:
+            self._context.set_state(Context.STATE_PLAY_GAME)
+        else:
+            print("Now you can choose enemy for your player:")
+            self._context.set_state(Context.STATE_SHOW_MENU)
 
 
 class StatePlayGame(AState):
+
     def handle(self):
-        print('play game')
+        user_player = AFactory.get_factory(StateSelectPlayer.players[0]['side']).create_character(
+            StateSelectPlayer.players[0]['name'])
+        comp_enemy = AFactory.get_factory(StateSelectPlayer.players[1]['side']).create_character(
+            StateSelectPlayer.players[1]['name'])
+        fight = Fight(user_player, comp_enemy)
+        fight.reestablish_hp_mp(user_player)
+        print(fight)
         self._context.set_state(Context.STATE_SHOW_MENU)
 
 

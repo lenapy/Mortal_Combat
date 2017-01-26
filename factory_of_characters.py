@@ -42,6 +42,13 @@ class AFactory(metaclass=ABCMeta):
     def create_character(self, name):
         pass
 
+    @staticmethod
+    def get_factory(side):
+        if side == 'Dark':
+            return SpecificFactoryDarkSide()
+        else:
+            return SpecificFactoryLightSide()
+
 
 class SpecificFactoryDarkSide(AFactory):
     def create_character(self, name):

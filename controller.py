@@ -29,6 +29,7 @@ class ControlCharacters(AControlCharacters):
         for character in characters_list:
             character.send_command(side, command)
 
+
 controller = ControlCharacters()
 controller.add_character("Dark", "Commander Bacara")
 controller.add_character("Dark", "Ayy Vida")

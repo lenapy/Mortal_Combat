@@ -1,10 +1,10 @@
 from abc import ABCMeta, abstractmethod
 import pickle
-
+import os
 
 from controller import controller
 from factory_of_characters import AFactory
-from fight import Fight
+from fight import Round
 
 
 class AShowCharactersInfo(metaclass=ABCMeta):
@@ -82,12 +82,15 @@ class StateShowMenu(AState):
             StateShowMenu.side = "Dark"
             controller.send_command("Dark", "is ready to fight")
         else:
+            StateShowMenu.side = "Light"
             controller.send_command("Light", "is ready to fight")
         user_input_2 = input("To choose character, press 1\n"
                              "To read info about characters, press 2")
         if user_input_2 == '1':
+            os.system('clear')
             self._context.set_state(Context.STATE_SELECT_PLAYER)
         else:
+            os.system('clear')
             self._context.set_state(Context.STATE_SHOW_CHARACTERS_INFO)
 
 
@@ -107,8 +110,10 @@ class StateShowCharactersInfo(AState):
         user_input_3 = input("To choose character, press 1\n"
                              "To change side, press 2")
         if user_input_3 == "1":
+            os.system('clear')
             self._context.set_state(Context.STATE_SELECT_PLAYER)
         else:
+            os.system('clear')
             self._context.set_state(Context.STATE_SHOW_MENU)
 
 
@@ -116,7 +121,6 @@ class StateSelectPlayer(AState):
     players = []
 
     def handle(self):
-
         if StateShowMenu.side == "Light":
             lst = [0, 'Agrippa Aldrete', 'Chewbacca', 'Padmé Amidala']
         else:
@@ -132,8 +136,10 @@ class StateSelectPlayer(AState):
         player = {'name': player_name, 'side': player_side}
         StateSelectPlayer.players.append(player)
         if len(StateSelectPlayer.players) == 2:
+            os.system('clear')
             self._context.set_state(Context.STATE_PLAY_GAME)
         else:
+            os.system('clear')
             print("Now you can choose enemy for your player:")
             self._context.set_state(Context.STATE_SHOW_MENU)
 
@@ -145,10 +151,22 @@ class StatePlayGame(AState):
             StateSelectPlayer.players[0]['name'])
         comp_enemy = AFactory.get_factory(StateSelectPlayer.players[1]['side']).create_character(
             StateSelectPlayer.players[1]['name'])
-        fight = Fight(user_player, comp_enemy)
-        fight.reestablish_hp_mp(user_player)
-        print(fight)
-        self._context.set_state(Context.STATE_SHOW_MENU)
+        Round(characters=(user_player, comp_enemy))
+        attack = 1
+        while user_player.is_alive() and comp_enemy.is_alive():
+            print("attack ", attack)
+            print("*" * 20)
+            user_player.attack(attack)
+            if comp_enemy.is_alive():
+                print("*" * 20)
+                comp_enemy.attack(attack)
+                print("*" * 20)
+                print("\n")
+            attack += 1
+        else:
+            winner = user_player if user_player.is_alive() else comp_enemy
+            print("Winner:", winner.name)
+            exit()
 
 
 class Context:
@@ -174,6 +192,7 @@ class Context:
     def next_state(self):
         self._state.handle()
 
-context = Context(Context.STATE_SHOW_MENU)
-while True:
-    context.next_state()
+if __name__ == "__main__":
+    context = Context(Context.STATE_SHOW_MENU)
+    while True:
+        context.next_state()
